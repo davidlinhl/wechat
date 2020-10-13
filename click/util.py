@@ -208,9 +208,9 @@ class Clicker:
             "About to start bulk sending, plz make sure wechat is displayed in the front and is at the main interface"
         )
         for n in contacts:
-            clicker.open_file_transfer()
-            clicker.share_send(n)
-            clicker.send_message(n, "message content")
+            self.open_file_transfer()
+            self.share_send(n)
+            self.send_message(n, "message content")
         print("批量发送完成")
 
     def get_groups(self):
@@ -222,12 +222,12 @@ class Clicker:
         # 获取所有群聊
         groups = itchat.get_chatrooms()
         with open(os.path.join("contact", "all_groups.txt"), "w") as f:
-            for g in groups:
+            for gcontact_search_pos in groups:
                 print(g["NickName"], file=f)
                 # print(g["MemberCount"], end=",", file=f)
                 # print(file=f)
 
-    def get_mouse(slef):
-        print("两秒后获取当前鼠标位置")
-        time.sleep(2)
-        print(pyautogui.position())
+    # def get_mouse(slef):
+    #     print("两秒后获取当前鼠标位置")
+    #     time.sleep(2)
+    #     print(pyautogui.position())

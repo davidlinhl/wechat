@@ -5,7 +5,8 @@ while True:
     print("输入操作名称")
     cmd = input()
     if cmd == "currpos":
-        clicker.get_mouse()
+        # clicker.get_mouse()
+        pass
     elif cmd == "getgroups":
         clicker.get_groups()
     elif cmd == "getlayout":

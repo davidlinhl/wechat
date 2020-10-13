@@ -47,6 +47,8 @@ def get_all_mbrs():
         # print(g)
         mbrs = get_mbr_list(g["NickName"])
         all_mbrs[g["NickName"]] = mbrs
+    with open("all_mbrs.pkl", "wb") as f:
+        pickle.dump(all_mbrs, f)
     return all_mbrs
 
 
