@@ -12,7 +12,7 @@ itchat.auto_login(hotReload=True)
 def get_mbr_list(group_name):
     """获取一个群里所有的成员.
 
-    Parameters
+    Parametersrm
     ----------
     group_name : str
         这个群的群名.
