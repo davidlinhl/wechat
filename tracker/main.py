@@ -76,6 +76,7 @@ class PersonHandler(tornado.web.RequestHandler):
         print(iql)
         msgs = influx_client.query(iql)
         msgs = list(msgs.get_points())
+        msgs = [[m["time"].split(".")[0].replace("T", " "), m["group"], m["content"]] for m in msgs]
         print(msgs)
 
         iql = "select count(group_m) from message where nickname='{}' group by \"group\";".format(nickname)
