@@ -12,7 +12,7 @@ import itchat
 from influxdb import InfluxDBClient
 
 
-client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
+client = InfluxDBClient("zjp.zdcd.online", 8086, "root", "root", "wechat")
 itchat.auto_login(hotReload=True, enableCmdQR=2)
 
 

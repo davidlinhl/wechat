@@ -2,12 +2,15 @@
 import tornado.httpserver, tornado.ioloop, tornado.options, tornado.web, os.path, random, string
 from tornado.options import define, options
 import pickle
+import json
 from influxdb import InfluxDBClient
+import itertools
+
 
 # import util
 
 
-influx_client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
+influx_client = InfluxDBClient("zjp.zdcd.online", 8086, "root", "root", "wechat")
 
 define("port", default=1122, help="run on the given port", type=int)
 
@@ -36,19 +39,40 @@ class GroupHandler(tornado.web.RequestHandler):
 
 
 class PersonHandler(tornado.web.RequestHandler):
+    """
+    个人基本信息
+    昵称，备注，头像，性别，位置
+    加入了的群，每个群一共发了多少消息，今天发了多少消息
+
+    """
+
     def get(self):
+        def tolist(res):
+            res = list(res.get_points())
+            return res
+
         nickname = self.get_argument("nickname")
         print(nickname)
 
         iql = "select * from message where sender='{}';".format(nickname)
+        print(iql)
         msgs = influx_client.query(iql)
-        iql = "select count('group_m') from message where sender='{}';".format(nickname)
-        msg_count = influx_client.query(iql)
-        iql = "select distinct('group_m') from message where sender='{}';".format(nickname)
-        groups = influx_client.query(iql)
+        msgs = tolist(msgs)
         print(msgs)
-        print(msg_count)
+
+        iql = "select count(group_m) from message where sender='{}' group by \"group\";".format(nickname)
+        print(iql)
+        msg_count = influx_client.query(iql)
+        keys = msg_count.keys()
+        points = list(msg_count.get_points())
+        groups = []
+        for idx in range(len(keys)):
+            # print(keys[idx][1]["group"])
+            # print(points[idx]["count"])
+            groups.append([keys[idx][1]["group"], points[idx]["count"]])
         print(groups)
+
+        self.render("person.html", msgs=msgs, groups=groups, nickname=nickname)
 
 
 class AllMessages(tornado.web.RequestHandler):

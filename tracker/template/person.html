@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>用户信息聚合</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="jumbotron text-center">
+      <h1>用户信息聚合</h1>
+    </div>
+
+    <div class="row">
+      <div class="col"><h3>微信昵称：</h3></div>
+      <div class="col">{{nickname}}</div>
+
+      <div class="col"><h3>微信头像：</h3></div>
+      <div class="col"></div>
+
+      <div class="col"><h3>加群总数：</h3></div>
+      <div class="col">{{len(groups)}}</div>
+    </div>
+
+    <br><br><br>
+
+
+    <h2>加入的群和发言情况</h2>
+
+    <ul class="list-group">
+      {% for g in groups%}
+        <li class="list-group-item">{{g[0]}} : {{g[1]}}</li>
+      {%end%}
+    </ul>
+
+
+
+
+  </div>
+
+
+
+</body>
+</html>

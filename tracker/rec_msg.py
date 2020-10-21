@@ -151,7 +151,7 @@ def rec_text(msg):
         {
             "measurement": "message",
             "tags": {"group": group_name, "sender": sender, "type": "text"},
-            "fields": {"text": content, "group_m": group_name, "sender_m": sender},
+            "fields": {"length": len(content), "group_m": group_name, "sender_m": sender},
         }
     ]
     client.write_points(json_body)
