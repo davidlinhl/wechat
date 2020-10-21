@@ -30,12 +30,48 @@
 
 
     <h2>加入的群和发言情况</h2>
-
-    <ul class="list-group">
+    <table class="table">
+    <thead>
+      <tr>
+        <th>群名</th>
+        <th>消息数</th>
+        <th>加入时间</th>
+        <th>平均每日消息</th>
+      </tr>
+    </thead>
+    <tbody>
       {% for g in groups%}
-        <li class="list-group-item">{{g[0]}} : {{g[1]}}</li>
+        <tr>
+          <td>{{g[0]}}</td>
+          <td>{{g[1]}}</td>
+          <td></td>
+          <td></td>
+        </tr>
       {%end%}
-    </ul>
+    </tbody>
+  </table>
+
+    <h2>总体发言情况</h2>
+    <table class="table">
+    <thead>
+      <tr>
+        <th>日期</th>
+        <th>发言数</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in msg_agg%}
+        <tr>
+          <td>{{r[0]}}</td>
+          <td>{{r[1]}}</td>
+        </tr>
+      {%end%}
+    </tbody>
+  </table>
+
+
+
+
 
 
 

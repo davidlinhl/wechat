@@ -47,17 +47,14 @@ class PersonHandler(tornado.web.RequestHandler):
     """
 
     def get(self):
-        def tolist(res):
-            res = list(res.get_points())
-            return res
-
+        print("\n\n\n")
         nickname = self.get_argument("nickname")
         print(nickname)
 
         iql = "select * from message where sender='{}';".format(nickname)
         print(iql)
         msgs = influx_client.query(iql)
-        msgs = tolist(msgs)
+        msgs = list(msgs.get_points())
         print(msgs)
 
         iql = "select count(group_m) from message where sender='{}' group by \"group\";".format(nickname)
@@ -72,7 +69,15 @@ class PersonHandler(tornado.web.RequestHandler):
             groups.append([keys[idx][1]["group"], points[idx]["count"]])
         print(groups)
 
-        self.render("person.html", msgs=msgs, groups=groups, nickname=nickname)
+        iql = "select count(group_m) from message where sender='{}' group by time(1d)".format(nickname)
+        print(iql)
+        msg_agg = influx_client.query(iql)
+        msg_agg = list(msg_agg.get_points())
+        msg_agg = [[d["time"].split("T")[0], d["count"]] for d in msg_agg]
+
+        print(msg_agg)
+
+        self.render("person.html", msgs=msgs, groups=groups, nickname=nickname, msg_agg=msg_agg)
 
 
 class AllMessages(tornado.web.RequestHandler):
