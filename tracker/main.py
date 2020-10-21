@@ -4,7 +4,7 @@ from tornado.options import define, options
 import pickle
 from influxdb import InfluxDBClient
 
-import util
+# import util
 
 
 influx_client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
