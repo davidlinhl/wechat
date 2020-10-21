@@ -236,6 +236,8 @@ def cal_join_leave():
                 "fields": {"name": join},
             }
         ]
+        client.write_points(json_body)
+
     for leave in leaves:
         json_body = [
             {
