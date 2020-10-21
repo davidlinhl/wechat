@@ -143,19 +143,40 @@ def do_checks(msg):
 @itchat.msg_register([TEXT], isGroupChat=True)
 def rec_text(msg):
     print(msg)
+    userid = msg["FromUserName"]
     group_name = msg["User"]["NickName"]
-    sender = msg["NickName"]
     group_nick = msg["ActualNickName"]
+    group_id = itchat.search_chatrooms(name=group_name)[0]["UserName"]
+    mbrs = itchat.update_chatroom(group_id)["MemberList"]
+    print("+++", mbrs)
+    for mbr in mbrs:
+        print(mbr["UserName"], mbr["NickName"])
+        if mbr["UserName"] == userid:
+            nickname = mbr["NickName"]
+            break
+    iql = "select count(nickname) from nick where nickname='{}' and groupnick='{}'".format(nickname, group_nick)
+    res = list(client.query(iql).get_points())
+    if len(res) == 0:
+        print("new")
+        json_body = [
+            {
+                "measurement": "nick",
+                "tags": {"group": group_name},
+                "fields": {"nickname": nickname, "groupnick": group_nick},
+            }
+        ]
+        client.write_points(json_body)
+
     content = msg["Content"]
-    print(group_name, sender, content)
+    print(group_name, group_nick, nickname, content)
     json_body = [
         {
             "measurement": "message",
-            "tags": {"group": group_name, "nickname": sender, "type": "text"},
+            "tags": {"group": group_name, "nickname": nickname, "type": "text"},
             "fields": {
                 "content": content[:30],
                 "group_m": group_name,
-                "nickname_m": sender,
+                "nickname_m": nickname,
                 "group_nick_m": group_nick,
             },
         }

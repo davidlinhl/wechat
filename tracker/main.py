@@ -48,16 +48,37 @@ class PersonHandler(tornado.web.RequestHandler):
 
     def get(self):
         print("\n\n\n")
-        nickname = self.get_argument("nickname")
+        nickname = self.get_argument("nickname", None)
+        if not nickname:
+            iql = 'select count(content) from message group by "nickname"'
+            mbrs = influx_client.query(iql)
+            nums = list(mbrs.get_points())
+            names = mbrs.keys()
+            mbrs = []
+            for idx in range(len(names)):
+
+                iql = "select first(nickname_m) from message where nickname='{}'".format(names[idx][1]["nickname"])
+                print(iql)
+                earliest = list(influx_client.query(iql).get_points())[0]["time"].replace("T", " ").split(".")[0]
+                print(earliest)
+
+                iql = "select last(nickname_m) from message where nickname='{}'".format(names[idx][1]["nickname"])
+                print(iql)
+                latest = list(influx_client.query(iql).get_points())[0]["time"].replace("T", " ").split(".")[0]
+                print(latest)
+
+                mbrs.append([names[idx][1]["nickname"], earliest, latest, nums[idx]["count"]])
+            print(mbrs)
+            self.render("person_list.html", mbrs=mbrs)
         print(nickname)
 
-        iql = "select * from message where sender='{}';".format(nickname)
+        iql = "select * from message where nickname='{}';".format(nickname)
         print(iql)
         msgs = influx_client.query(iql)
         msgs = list(msgs.get_points())
         print(msgs)
 
-        iql = "select count(group_m) from message where sender='{}' group by \"group\";".format(nickname)
+        iql = "select count(group_m) from message where nickname='{}' group by \"group\";".format(nickname)
         print(iql)
         msg_count = influx_client.query(iql)
         keys = msg_count.keys()
@@ -69,15 +90,20 @@ class PersonHandler(tornado.web.RequestHandler):
             groups.append([keys[idx][1]["group"], points[idx]["count"]])
         print(groups)
 
-        iql = "select count(group_m) from message where sender='{}' group by time(1d)".format(nickname)
+        iql = "select count(group_m) from message where nickname='{}' group by time(1d)".format(nickname)
         print(iql)
         msg_agg = influx_client.query(iql)
         msg_agg = list(msg_agg.get_points())
         msg_agg = [[d["time"].split("T")[0], d["count"]] for d in msg_agg]
-
         print(msg_agg)
 
-        self.render("person.html", msgs=msgs, groups=groups, nickname=nickname, msg_agg=msg_agg)
+        iql = "select distinct(groupnick) from nick where nickname='{}'".format(nickname)
+        print(iql)
+        nicks = list(influx_client.query(iql).get_points())
+        nicks = [n["distinct"] for n in nicks]
+        print(nicks)
+
+        self.render("person.html", msgs=msgs, groups=groups, nickname=nickname, msg_agg=msg_agg, nicks=nicks)
 
 
 class AllMessages(tornado.web.RequestHandler):
