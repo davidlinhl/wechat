@@ -239,6 +239,7 @@ def cal_join_leave():
     return join, leave
 
 
+print("here")
 print(cal_join_leave())
 
 # def cal_join_leave():
