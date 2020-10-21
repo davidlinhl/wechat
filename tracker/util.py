@@ -136,7 +136,7 @@ def get_group_mbr(to_list=False, unique=True, save=True):
     return all_mbrs
 
 
-# print(get_group_mbr(to_list=True, unique=False))
+print(get_group_mbr(to_list=True, unique=False))
 
 
 def get_last_group_mbr():
