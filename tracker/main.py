@@ -9,7 +9,7 @@ from influxdb import InfluxDBClient
 
 influx_client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
 
-define("port", default=8888, help="run on the given port", type=int)
+define("port", default=1122, help="run on the given port", type=int)
 
 
 class IndexHandler(tornado.web.RequestHandler):
