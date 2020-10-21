@@ -39,7 +39,7 @@ class PersonHandler(tornado.web.RequestHandler):
     def get(self):
         nickname = self.get_argument("nickname")
         print(nickname)
-        print("select * from message where sender={};".format(nickname))
+        print("select * from message where sender='{}';".format(nickname))
         res = influx_client.query(
             "select * from message where sender={};".format(nickname)
         )
