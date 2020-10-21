@@ -195,16 +195,19 @@ def diff_mbr(old_mbr, new_mbr):
     leave = []
     old_mbr = old_mbr.items()
 
-    for rec in old_mbr:
-        old = rec[1]
-        new = new_mbr[rec[0]]
-        for name in old:
-            if name not in new:
-                leave.append(name)
-        for name in new:
-            if name not in old:
-                join.append(name)
+    try:
+        for rec in old_mbr:
+            old = rec[1]
+            new = new_mbr[rec[0]]
+            for name in old:
+                if name not in new:
+                    leave.append(name)
 
+            for name in new:
+                if name not in old:
+                    join.append(name)
+    except:
+        pass
     return join, leave
 
 

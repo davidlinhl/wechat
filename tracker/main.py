@@ -2,8 +2,10 @@
 import tornado.httpserver, tornado.ioloop, tornado.options, tornado.web, os.path, random, string
 from tornado.options import define, options
 import pickle
-import util
 from influxdb import InfluxDBClient
+
+import util
+
 
 influx_client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
 
@@ -34,7 +36,11 @@ class GroupHandler(tornado.web.RequestHandler):
 
 class PersonHandler(tornado.web.RequestHandler):
     def get(self):
-        pass
+        nickname = self.get_argument("nickname")
+        res = influx_client.query(
+            "select * from message where sender={};".format(nickname)
+        )
+        self.write(res)
 
 
 class AllMessages(tornado.web.RequestHandler):

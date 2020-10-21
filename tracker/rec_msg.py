@@ -104,6 +104,10 @@ friends 好友
 }
 
 """
+"""
+入群消息
+{'MsgId': '8805197458565727798', 'FromUserName': '@@26a0c8cfafe8db799218e2cb21aa3f21552b1f3d674ead993885f13ebd646915', 'ToUserName': '@a590ae69c9ac06a6c1bc1fb48d7ba93317130869e878c440d96f8dd91868bdc8', 'MsgType': 10000, 'Content': 'You invited 赵剑鹏 to the group chat.   ', 'Status': 4, 'ImgStatus': 1, 'CreateTime': 1603277796, 'VoiceLength': 0, 'PlayLength': 0, 'FileName': '', 'FileSize': '', 'MediaId': '', 'Url': '', 'AppMsgType': 0, 'StatusNotifyCode': 0, 'StatusNotifyUserName': '', 'RecommendInfo': {'UserName': '', 'NickName': '', 'QQNum': 0, 'Province': '', 'City': '', 'Content': '', 'Signature': '', 'Alias': '', 'Scene': 0, 'VerifyFlag': 0, 'AttrStatus': 0, 'Sex': 0, 'Ticket': '', 'OpCode': 0}, 'ForwardFlag': 0, 'AppInfo': {'AppID': '', 'Type': 0}, 'HasProductId': 0, 'Ticket': '', 'ImgHeight': 0, 'ImgWidth': 0, 'SubMsgType': 0, 'NewMsgId': 8805197458565727798, 'OriContent': '', 'EncryFileName': '', 'ActualUserName': '@a590ae69c9ac06a6c1bc1fb48d7ba93317130869e878c440d96f8dd91868bdc8', 'ActualNickName': '多语言代码生成器', 'IsAt': False, 'User': <Chatroom: {'MemberList': <ContactList: [<ChatroomMember: {'MemberList': <ContactList: []>, 'Uin': 0, 'UserName': '@a590ae69c9ac06a6c1bc1fb48d7ba93317130869e878c440d96f8dd91868bdc8', 'NickName': '多语言代码生成器', 'AttrStatus': 33788773, 'PYInitial': '', 'PYQuanPin': '', 'RemarkPYInitial': '', 'RemarkPYQuanPin': '', 'MemberStatus': 0, 'DisplayName': '', 'KeyWord': ''}>]>, 'Uin': 0, 'UserName': '@@26a0c8cfafe8db799218e2cb21aa3f21552b1f3d674ead993885f13ebd646915', 'NickName': 'silent', 'HeadImgUrl': '/cgi-bin/mmwebwx-bin/webwxgetheadimg?seq=704156349&username=@@26a0c8cfafe8db799218e2cb21aa3f21552b1f3d674ead993885f13ebd646915&skey=', 'ContactFlag': 2051, 'MemberCount': 1, 'RemarkName': '', 'HideInputBarFlag': 0, 'Sex': 0, 'Signature': '', 'VerifyFlag': 0, 'OwnerUin': 0, 'PYInitial': 'SILENT', 'PYQuanPin': 'silent', 'RemarkPYInitial': '', 'RemarkPYQuanPin': '', 'StarFriend': 0, 'AppAccountFlag': 0, 'Statues': 0, 'AttrStatus': 0, 'Province': '', 'City': '', 'Alias': '', 'SnsFlag': 0, 'UniFriend': 0, 'DisplayName': '', 'ChatRoomId': 0, 'KeyWord': '', 'EncryChatRoomId': '@a9e31d3b377b364f5eaeb3d7b6f0a5dd', 'IsOwner': 1, 'IsAdmin': None, 'Self': <ChatroomMember: {'MemberList': <ContactList: []>, 'Uin': 0, 'UserName': '@a590ae69c9ac06a6c1bc1fb48d7ba93317130869e878c440d96f8dd91868bdc8', 'NickName': '多语言代码生成器', 'AttrStatus': 33788773, 'PYInitial': '', 'PYQuanPin': '', 'RemarkPYInitial': '', 'RemarkPYQuanPin': '', 'MemberStatus': 0, 'DisplayName': '', 'KeyWord': ''}>, 'HeadImgUpdateFlag': 1, 'ContactType': 0, 'ChatRoomOwner': '@a590ae69c9ac06a6c1bc1fb48d7ba93317130869e878c440d96f8dd91868bdc8'}>, 'Type': 'Note', 'Text': 'You invited 赵剑鹏 to the group chat.   '}
+"""
 
 """群里有多少人,群人数的曲线,群发言热度的曲线,退群和加群的曲线"""
 """显示一个人加了多少个群,在群里说了多少话,发消息的热度曲线"""
@@ -138,7 +142,7 @@ def do_checks(msg):
 # 处理群聊文字消息
 @itchat.msg_register([TEXT], isGroupChat=True)
 def rec_text(msg):
-    # print(msg)
+    print(msg)
     group_name = msg["User"]["NickName"]
     sender = msg["ActualNickName"]
     content = msg["Content"]
