@@ -39,13 +39,13 @@ class PersonHandler(tornado.web.RequestHandler):
     def get(self):
         nickname = self.get_argument("nickname")
         print(nickname)
-        print("select * from message where sender='{}';".format(nickname))
-        res = influx_client.query(
-            "select * from message where sender='{}';".format(nickname)
-        )
 
-        print(res)
-        self.write(res[0])
+        msgs = influx_client.query("select * from message where sender='{}';".format(nickname))
+        msg_count = influx_client.query("select count(*) from message where sender='{}';".format(nickname))
+        groups = influx_client.query("select distinct('group_m') from message where sender='{}';".format(nickname))
+        print(msgs)
+        print(msg_count)
+        print(groups)
 
 
 class AllMessages(tornado.web.RequestHandler):
