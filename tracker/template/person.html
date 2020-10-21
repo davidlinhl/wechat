@@ -82,10 +82,11 @@
     </tr>
   </thead>
   <tbody>
-    {% for r in msgs%}
+    {% for m in msgs%}
       <tr>
-        <td>{{msgs[0]}}</td>
-        <td>{{msgs[1]}}</td>
+        <td>{{m[0]}}</td>
+        <td>{{m[1]}}</td>
+        <td>{{m[2]}}</td>
       </tr>
     {%end%}
   </tbody>
