@@ -137,6 +137,7 @@ def do_checks(msg):
 # 处理群聊文字消息
 @itchat.msg_register([TEXT], isGroupChat=True)
 def rec_text(msg):
+    print(msg)
     group_name = msg["User"]["NickName"]
     sender = msg["ActualNickName"]
     content = msg["Content"]
