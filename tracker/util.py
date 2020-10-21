@@ -191,8 +191,8 @@ def get_last_group_mbr():
 
 
 def diff_mbr(old_mbr, new_mbr):
-    join_num = 0
-    leave_num = 0
+    join = []
+    leave = []
     old_mbr = old_mbr.items()
 
     for rec in old_mbr:
@@ -200,12 +200,12 @@ def diff_mbr(old_mbr, new_mbr):
         new = new_mbr[rec[0]]
         for name in old:
             if name not in new:
-                leave_num += 1
+                leave.append(name)
         for name in new:
             if name not in old:
-                join_num += 1
+                join.append(name)
 
-    return join_num, leave_num
+    return join, leave
 
 
 # old_mbr = [
@@ -226,20 +226,29 @@ def diff_mbr(old_mbr, new_mbr):
 
 
 def cal_join_leave():
-    join, leave = diff_mbr(get_last_group_mbr(), get_group_mbr())
-    print(join, leave)
-    json_body = [
-        {
-            "measurement": "join_leave",
-            # "tags": {"group": group_name, "sender": sender, "type": "text"},
-            "fields": {"join": join, "leave": leave},
-        }
-    ]
-    client.write_points(json_body)
-    return join, leave
+    joins, leaves = diff_mbr(get_last_group_mbr(), get_group_mbr())
+    print(joins, leaves)
+    for join in joins:
+        json_body = [
+            {
+                "measurement": "join_leave",
+                "tags": {"type": "join"},
+                "fields": {"name": join},
+            }
+        ]
+    for leave in leaves:
+        json_body = [
+            {
+                "measurement": "join_leave",
+                "tags": {"type": "leave"},
+                "fields": {"name": leave},
+            }
+        ]
+        client.write_points(json_body)
+
+    return len(joins), len(leaves)
 
 
-print("here")
 print(cal_join_leave())
 
 # def cal_join_leave():
