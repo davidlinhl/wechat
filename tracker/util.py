@@ -191,6 +191,7 @@ def get_last_group_mbr():
 
 
 def diff_mbr(old_mbr, new_mbr):
+    # TODO: 如果这个群之前没有
     join = []
     leave = []
     old_mbr = old_mbr.items()
@@ -254,7 +255,7 @@ def cal_join_leave():
     return len(joins), len(leaves)
 
 
-print(cal_join_leave())
+# print(cal_join_leave())
 
 # def cal_join_leave():
 #     """计算今天所有群进群和退群的人数.
