@@ -108,7 +108,7 @@ def get_group_mbr(to_list=False, unique=True, save=True):
     # 1. 获取所有群成员的dict
     all_mbrs = {}
     groups = get_group_names()
-    # groups = ["silent", "test3"]
+    groups = ["silent", "test3"]
     for n in groups:
         mbrs = get_mbr_list(n)
         all_mbrs[n] = mbrs
@@ -226,7 +226,10 @@ def diff_mbr(old_mbr, new_mbr):
 
 
 def cal_join_leave():
-    joins, leaves = diff_mbr(get_last_group_mbr(), get_group_mbr())
+    old = get_last_group_mbr()
+    new = get_group_mbr()
+    print(old, new)
+    joins, leaves = diff_mbr(old, new)
     print(joins, leaves)
     for join in joins:
         json_body = [
