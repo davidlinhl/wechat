@@ -144,14 +144,20 @@ def do_checks(msg):
 def rec_text(msg):
     print(msg)
     group_name = msg["User"]["NickName"]
-    sender = msg["ActualNickName"]
+    sender = msg["NickName"]
+    group_nick = msg["ActualNickName"]
     content = msg["Content"]
     print(group_name, sender, content)
     json_body = [
         {
             "measurement": "message",
-            "tags": {"group": group_name, "sender": sender, "type": "text"},
-            "fields": {"content": content[:30], "group_m": group_name, "sender_m": sender},
+            "tags": {"group": group_name, "nickname": sender, "type": "text"},
+            "fields": {
+                "content": content[:30],
+                "group_m": group_name,
+                "nickname_m": sender,
+                "group_nick_m": group_nick,
+            },
         }
     ]
     client.write_points(json_body)
