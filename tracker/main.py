@@ -41,6 +41,8 @@ class PersonHandler(tornado.web.RequestHandler):
         res = influx_client.query(
             "select * from message where sender={};".format(nickname)
         )
+        print("select * from message where sender={};".format(nickname))
+        print(res)
         self.write(res)
 
 
