@@ -14,19 +14,20 @@ define("port", default=8888, help="run on the given port", type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        join_leaves = util.cal_join_leave()
-        joins = leaves = 0
-        for r in join_leaves.values():
-            joins += r[1]
-            leaves += r[2]
-        self.render(
-            "index.html",
-            group_num=len(util.get_group_names()),
-            group_mbr_num=len(util.get_group_mbrs()),
-            unique_group_mbr_num=len(util.get_unique_group_mbrs()),
-            joins=joins,
-            leaves=leaves,
-        )
+        # join_leaves = util.cal_join_leave()
+        # joins = leaves = 0
+        # for r in join_leaves.values():
+        #     joins += r[1]
+        #     leaves += r[2]
+        # self.render(
+        #     "index.html",
+        #     group_num=len(util.get_group_names()),
+        #     group_mbr_num=len(util.get_group_mbrs()),
+        #     unique_group_mbr_num=len(util.get_unique_group_mbrs()),
+        #     joins=joins,
+        #     leaves=leaves,
+        # )
+        pass
 
 
 class GroupHandler(tornado.web.RequestHandler):
