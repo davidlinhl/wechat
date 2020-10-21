@@ -109,7 +109,6 @@ def get_group_mbr(to_list=False, unique=True, save=True):
     all_mbrs = {}
     groups = get_group_names()
     # groups = ["silent", "test3"]
-    print(groups)
     for n in groups:
         mbrs = get_mbr_list(n)
         all_mbrs[n] = mbrs
