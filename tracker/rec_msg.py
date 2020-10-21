@@ -129,7 +129,7 @@ def do_checks(msg):
     sender = msg["User"]["UserName"]
     rcver = msg["ToUserName"]
     content = msg["Content"]
-    print(sender, rcver, content)
+    # print(sender, rcver, content)
     if sender == "filehelper" and rcver == "filehelper" and content == "run":
         itchat.send(u"[BOT]: Starting to run analysys", "filehelper")
 
