@@ -131,13 +131,14 @@ def do_checks(msg):
     content = msg["Content"]
     # print(sender, rcver, content)
     if sender == "filehelper" and rcver == "filehelper" and content == "run":
+        print(util.cal_join_leave())
         itchat.send(u"[BOT]: Starting to run analysys", "filehelper")
 
 
 # 处理群聊文字消息
 @itchat.msg_register([TEXT], isGroupChat=True)
 def rec_text(msg):
-    print(msg)
+    # print(msg)
     group_name = msg["User"]["NickName"]
     sender = msg["ActualNickName"]
     content = msg["Content"]
