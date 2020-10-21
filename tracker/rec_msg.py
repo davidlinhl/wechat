@@ -1,6 +1,7 @@
 import itchat
 from itchat.content import *
 import util
+from util import client
 
 """
 text 文本
