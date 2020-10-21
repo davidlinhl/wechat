@@ -45,7 +45,7 @@ class PersonHandler(tornado.web.RequestHandler):
         )
 
         print(res)
-        self.write(res)
+        self.write(res[0])
 
 
 class AllMessages(tornado.web.RequestHandler):
