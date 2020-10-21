@@ -138,7 +138,7 @@ def do_checks(msg):
 @itchat.msg_register([TEXT], isGroupChat=True)
 def rec_text(msg):
     group_name = msg["User"]["NickName"]
-    sender = msg["User"]["Self"]["NickName"]
+    sender = msg["ActualNickName"]
     content = msg["Content"]
     print(group_name, sender, content)
     json_body = [
