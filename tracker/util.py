@@ -9,9 +9,11 @@ import datetime
 import pickle
 
 import itchat
+from influxdb import InfluxDBClient
 
 
-itchat.auto_login(hotReload=True)
+client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
+itchat.auto_login(hotReload=True, enableCmdQR=2)
 
 
 # 获取所有群聊
@@ -42,7 +44,7 @@ def get_group_names():
 # print(get_group_names())
 
 
-def get_mbr_list(group_name, save=True):
+def get_mbr_list(group_name, save=False):
     """获取一个群里所有的成员,并添加pkl记录.
 
     Parametersrm
@@ -85,95 +87,126 @@ def get_mbr_list(group_name, save=True):
 # print(get_mbr_list("test"))
 
 
-def get_mbr_lists():
-    """获取账户下所有群的成员,并pkl保存.
-
-    Returns
-    -------
-    dict
-        群名:所有成员.
-
-    """
-    all_mbrs = {}
-    groups = get_group_names()
-    for n in groups:
-        mbrs = get_mbr_list(n)
-        all_mbrs[n] = mbrs
-    with open("all_mbr/" + str(int(time.time())) + ".pkl", "wb") as f:
-        pickle.dump(all_mbrs, f)
-    return all_mbrs
-
-
-# print(get_mbr_lists())
-
-
-def get_group_mbrs():
-    mbr_lists = get_mbr_lists()
-    mbrs = []
-    for l in mbr_lists.values():
-        for name in l:
-            mbrs.append(name)
-    return mbrs
-
-
-# print(get_group_mbrs())
-
-
-def get_unique_group_mbrs():
-    mbrs = get_group_mbrs()
-    unique = []
-    for name in mbrs:
-        if name not in unique:
-            unique.append(name)
-    return unique
-
-
-# print(get_unique_group_mbrs())
-
-
-def get_yesterday_mbr(group_name):
-    """获取一个群昨天的成员.
-    找昨天最后的一条记录
+def get_group_mbr(to_list=False, unique=True, save=True):
+    """获取所有群成员，放进一个dict.
 
     Parameters
     ----------
-    group_name : str
-        群名称.
+    to_list : bool
+        是否将结果转成一个list.
+    unique : bool
+        是否对list结果进行去重，对dict结果无效.
+    save : bool
+        是否对结果进行保存.
+
+    Returns
+    -------
+    list/dict
+        所有群的成员.
+    """
+
+    # 1. 获取所有群成员的dict
+    all_mbrs = {}
+    groups = get_group_names()
+    # groups = ["silent", "test3"]
+    print(groups)
+    for n in groups:
+        mbrs = get_mbr_list(n)
+        all_mbrs[n] = mbrs
+
+    # 2. 进行保存
+    if save:
+        with open("all_mbr/" + str(int(time.time())) + ".pkl", "wb") as f:
+            pickle.dump(all_mbrs, f)
+
+    # 3. 是否转换成list
+    if to_list:
+        mbrs = []
+        for l in all_mbrs.values():
+            for name in l:
+                mbrs.append(name)
+        # 3.1 进行去重
+        if unique:
+            umbrs = []
+            for name in mbrs:
+                if name not in umbrs:
+                    umbrs.append(name)
+            mbrs = umbrs
+        all_mbrs = mbrs
+
+    return all_mbrs
+
+
+# print(get_group_mbr(to_list=True, unique=False))
+
+
+def get_last_group_mbr():
+    """读取all_mbr文件夹下最新的pkl记录返回.
 
     Returns
     -------
     list
-        昨天的群成员昵称列表.
-
+        最后一个dict类型的 mbr 记录.
     """
-    today0_ts = int(time.mktime(datetime.date.today().timetuple()))
-    mbr_file_name = os.path.join("member", group_name + ".mbrlist")
-    with open(mbr_file_name, "rb") as f:
-        mbr_records = pickle.load(f)
+    names = os.listdir("./all_mbr")
+    names.sort()
+    with open(os.path.join("./all_mbr", names[-1]), "rb") as f:
+        mbr_lists = pickle.load(f)
+    return mbr_lists
 
-    max_ts = 0
-    yesterday_mbr = []
-    for k, v in mbr_records.items():
-        if k < today0_ts and k > today0_ts - 86400:
-            if k > max_ts:
-                max_ts = k
-                yesterday_mbr = mbr_records[k]
-    return yesterday_mbr
 
+# print(get_last_group_mbr())
+
+
+# def get_yesterday_mbr(group_name):
+#     """获取一个群昨天的成员.
+#     找昨天最后的一条记录
+#
+#     Parameters
+#     ----------
+#     group_name : str
+#         群名称.
+#
+#     Returns
+#     -------
+#     list
+#         昨天的群成员昵称列表.
+#
+#     """
+#     today0_ts = int(time.mktime(datetime.date.today().timetuple()))
+#     mbr_file_name = os.path.join("member", group_name + ".mbrlist")
+#     with open(mbr_file_name, "rb") as f:
+#         mbr_records = pickle.load(f)
+#
+#     max_ts = 0
+#     yesterday_mbr = []
+#     for k, v in mbr_records.items():
+#         if k < today0_ts and k > today0_ts - 86400:
+#             if k > max_ts:
+#                 max_ts = k
+#                 yesterday_mbr = mbr_records[k]
+#     return yesterday_mbr
+#
 
 # print(get_yesterday_mbr("test"))
 
 
 def diff_mbr(old_mbr, new_mbr):
-    leave_num = 0
-    for id in old_mbr:
-        if id not in new_mbr:
-            leave_num += 1
     join_num = 0
-    for id in new_mbr:
-        if id not in old_mbr:
-            join_num += 1
-    return len(new_mbr), join_num, leave_num
+    leave_num = 0
+    old_mbr = old_mbr.items()
+
+    for rec in old_mbr:
+        old = rec[1]
+        new = new_mbr[rec[0]]
+        for name in old:
+            if name not in new:
+                leave_num += 1
+        for name in new:
+            if name not in old:
+                join_num += 1
+
+    return join_num, leave_num
 
 
 # old_mbr = [
@@ -190,23 +223,40 @@ def diff_mbr(old_mbr, new_mbr):
 # ]
 #
 # print(diff_mbr(old_mbr, new_mbr))
+# print(diff_mbr(get_last_group_mbr(), get_group_mbr()))
 
 
 def cal_join_leave():
-    """计算今天所有群进群和退群的人数.
+    join, leave = diff_mbr(get_last_group_mbr(), get_group_mbr())
+    print(join, leave)
+    json_body = [
+        {
+            "measurement": "join_leave",
+            # "tags": {"group": group_name, "sender": sender, "type": "text"},
+            "fields": {"join": join, "leave": leave},
+        }
+    ]
+    client.write_points(json_body)
+    return join, leave
 
-    Returns
-    -------
-    dict
-        今天所有群的人数,进群人数,退群人数.
 
-    """
-    mbr_lists = get_mbr_lists()
-    diffs = {}
-    for name, mbr in mbr_lists.items():
-        yesterday_mbr = get_yesterday_mbr(name)
-        diffs[name] = diff_mbr(yesterday_mbr, mbr)
-    return diffs
+print(cal_join_leave())
+
+# def cal_join_leave():
+#     """计算今天所有群进群和退群的人数.
+#
+#     Returns
+#     -------
+#     dict
+#         今天所有群的人数,进群人数,退群人数.
+#
+#     """
+#     mbr_lists = get_mbr_lists()
+#     diffs = {}
+#     for name, mbr in mbr_lists.items():
+#         yesterday_mbr = get_yesterday_mbr(name)
+#         diffs[name] = diff_mbr(yesterday_mbr, mbr)
+#     return diffs
 
 
 # print(cal_join_leave())

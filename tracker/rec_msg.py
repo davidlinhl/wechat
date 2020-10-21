@@ -1,6 +1,6 @@
 import itchat
 from itchat.content import *
-from influxdb import InfluxDBClient
+import util
 
 """
 text 文本
@@ -15,7 +15,6 @@ video 视频
 friends 好友
 """
 
-client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
 
 """
 {
@@ -128,9 +127,9 @@ client = InfluxDBClient("localhost", 8086, "root", "root", "wechat")
 def do_checks(msg):
     sender = msg["User"]["UserName"]
     rcver = msg["ToUserName"]
-    print(sender, rcver)
-    if sender == "filehelper" and rcver == "filehelper":
-        print("run")
+    content = msg["Content"]
+    print(sender, rcver, content)
+    if sender == "filehelper" and rcver == "filehelper" and content == "run":
         itchat.send(u"[BOT]: Starting to run analysys", "filehelper")
 
 
@@ -197,6 +196,4 @@ def rec_friend_req(msg):
     print(msg)
 
 
-itchat.auto_login(hotReload=True, enableCmdQR=2)
-print("Logged in")
 itchat.run()
