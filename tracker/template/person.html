@@ -72,6 +72,26 @@
     </tbody>
   </table>
 
+  <h2>所有发言</h2>
+  <table class="table">
+  <thead>
+    <tr>
+      <th>时间(UTC +0)</th>
+      <th>群</th>
+      <th>内容(仅前30字)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in msgs%}
+      <tr>
+        <td>{{msgs[0]}}</td>
+        <td>{{msgs[1]}}</td>
+      </tr>
+    {%end%}
+  </tbody>
+</table>
+
+
 
 
 
