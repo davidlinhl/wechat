@@ -10,3 +10,8 @@ possible solution on Centos7 is
 yum install libffi-devel
 ldconfig
 ```
+
+
+TODO
+- [ ] 添加person按照消息数排序
+- [ ] 用户名去首尾空格
