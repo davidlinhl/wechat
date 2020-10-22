@@ -134,9 +134,12 @@ def do_checks(msg):
     rcver = msg["ToUserName"]
     content = msg["Content"]
     # print(sender, rcver, content)
-    if sender == "filehelper" and rcver == "filehelper" and content == "run":
-        print(util.cal_join_leave())
-        itchat.send(u"[BOT]: Starting to run analysys", "filehelper")
+    if sender == "filehelper" and rcver == "filehelper":
+        if content == "run":
+            print(util.cal_join_leave())
+            itchat.send(u"[BOT]: Starting to run analysys", "filehelper")
+        if content == "." or content == "。":
+            itchat.send(u"Still Alive", "filehelper")
 
 
 def save_message(msg, msg_type, content):
