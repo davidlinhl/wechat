@@ -50,6 +50,7 @@ class PersonHandler(tornado.web.RequestHandler):
         print("\n\n\n")
         nickname = self.get_argument("nickname", None)
         if not nickname:
+            # TODO: 人名为什么会为空
             iql = 'select count(content) from message group by "nickname"'
             mbrs = influx_client.query(iql)
             nums = list(mbrs.get_points())
