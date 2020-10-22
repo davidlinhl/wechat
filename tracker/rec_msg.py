@@ -139,25 +139,37 @@ def do_checks(msg):
         itchat.send(u"[BOT]: Starting to run analysys", "filehelper")
 
 
-# 处理群聊文字消息
-@itchat.msg_register([TEXT], isGroupChat=True)
-def rec_text(msg):
+def save_message(msg, msg_type, content):
+    """处理收到的一条消息，解析内容，保存昵称，保存消息记录.
+
+    Parameters
+    ----------
+    msg : itchat message
+        收到的消息.
+    msg_type : str
+        收到的消息类型.
+    content : str
+        要存储的消息内容
+
+    """
     print(msg)
-    userid = msg["ActualUserName"]
-    group_name = msg["User"]["NickName"]
-    group_nick = msg["ActualNickName"]
+    # 1. 解析消息信息
+    userid = msg["ActualUserName"]  # @ 的那个id
+    group_name = msg["User"]["NickName"]  # 群名
+    group_nick = msg["ActualNickName"]  # 用户在群里的昵称
+    # content = msg["Content"]  # 消息内容
+    # 1.1 获取用户备注名称
     group_id = itchat.search_chatrooms(name=group_name)[0]["UserName"]
     mbrs = itchat.update_chatroom(group_id)["MemberList"]
-    # print("+++", mbrs)
     for mbr in mbrs:
-        # print(mbr["UserName"], mbr["NickName"])
         if mbr["UserName"] == userid:
             nickname = mbr["NickName"]
             break
+    # 如果这个备注没存就存起来，一个人可以有多个备注
     iql = "select count(nickname) from nick where nickname='{}' and groupnick='{}'".format(nickname, group_nick)
     res = list(client.query(iql).get_points())
     if len(res) == 0:
-        print("new")
+        print("Saved new nickname")
         json_body = [
             {
                 "measurement": "nick",
@@ -166,13 +178,13 @@ def rec_text(msg):
             }
         ]
         client.write_points(json_body)
+    # 2. 保存消息
 
-    content = msg["Content"]
     print(group_name, group_nick, nickname, content)
     json_body = [
         {
             "measurement": "message",
-            "tags": {"group": group_name, "nickname": nickname, "type": "text"},
+            "tags": {"group": group_name, "nickname": nickname, "type": msg_type},
             "fields": {
                 "content": content[:30],
                 "group_m": group_name,
@@ -182,6 +194,13 @@ def rec_text(msg):
         }
     ]
     client.write_points(json_body)
+
+
+# 处理群聊文字消息
+@itchat.msg_register([TEXT], isGroupChat=True)
+def rec_text(msg):
+    save_message(msg, "text", msg["Content"])
+    print(msg, end="\n\n\n")
 
 
 @itchat.msg_register([MAP], isGroupChat=True)

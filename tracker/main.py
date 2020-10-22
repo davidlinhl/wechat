@@ -55,7 +55,10 @@ class PersonHandler(tornado.web.RequestHandler):
             nums = list(mbrs.get_points())
             names = mbrs.keys()
             mbrs = []
+            print(names)
             for idx in range(len(names)):
+                if len(names[idx][1]["nickname"]) == 0:
+                    continue
 
                 iql = "select first(nickname_m) from message where nickname='{}'".format(names[idx][1]["nickname"])
                 print(iql)
@@ -70,6 +73,7 @@ class PersonHandler(tornado.web.RequestHandler):
                 mbrs.append([names[idx][1]["nickname"], earliest, latest, nums[idx]["count"]])
             print(mbrs)
             self.render("person_list.html", mbrs=mbrs)
+            return
         print(nickname)
 
         iql = "select * from message where nickname='{}';".format(nickname)
@@ -86,8 +90,6 @@ class PersonHandler(tornado.web.RequestHandler):
         points = list(msg_count.get_points())
         groups = []
         for idx in range(len(keys)):
-            # print(keys[idx][1]["group"])
-            # print(points[idx]["count"])
             groups.append([keys[idx][1]["group"], points[idx]["count"]])
         print(groups)
 
