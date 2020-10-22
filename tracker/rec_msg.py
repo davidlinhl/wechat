@@ -143,14 +143,14 @@ def do_checks(msg):
 @itchat.msg_register([TEXT], isGroupChat=True)
 def rec_text(msg):
     print(msg)
-    userid = msg["FromUserName"]
+    userid = msg["ActualUserName"]
     group_name = msg["User"]["NickName"]
     group_nick = msg["ActualNickName"]
     group_id = itchat.search_chatrooms(name=group_name)[0]["UserName"]
     mbrs = itchat.update_chatroom(group_id)["MemberList"]
-    print("+++", mbrs)
+    # print("+++", mbrs)
     for mbr in mbrs:
-        print(mbr["UserName"], mbr["NickName"])
+        # print(mbr["UserName"], mbr["NickName"])
         if mbr["UserName"] == userid:
             nickname = mbr["NickName"]
             break
@@ -229,4 +229,4 @@ def rec_friend_req(msg):
     print(msg)
 
 
-itchat.run()
+itchat.run(True)

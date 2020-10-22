@@ -12,8 +12,12 @@ import itchat
 from influxdb import InfluxDBClient
 
 
+def logout():
+    print("Logged out")
+
+
 client = InfluxDBClient("zjp.zdcd.online", 8086, "root", "root", "wechat")
-itchat.auto_login(hotReload=True, enableCmdQR=2)
+itchat.auto_login(hotReload=True, enableCmdQR=2, exitCallback=logout)
 
 
 # 获取所有群聊
