@@ -1,16 +1,16 @@
 # coding=utf-8
+import json
+import pickle
+import itertools
+from multiprocessing import Process
+
+import itchat
 import tornado.httpserver, tornado.ioloop, tornado.options, tornado.web, os.path, random, string
 from tornado.options import define, options
-import pickle
-import json
 from influxdb import InfluxDBClient
-import itertools
 
-
-# import util
-
-
-influx_client = InfluxDBClient("zjp.zdcd.online", 8086, "root", "root", "wechat")
+import util
+from util import client
 
 define("port", default=1122, help="run on the given port", type=int)
 
@@ -47,12 +47,19 @@ class PersonHandler(tornado.web.RequestHandler):
     """
 
     def get(self):
+        def rec_msg():
+            print("in child")
+            itchat.auto_login(hotReload=True)
+
+        it_process = Process(target=rec_msg)
+        it_process.start()
+
         print("\n\n\n")
         nickname = self.get_argument("nickname", None)
         if not nickname:
             # TODO: 人名为什么会为空
             iql = 'select count(content) from message group by "nickname"'
-            mbrs = influx_client.query(iql)
+            mbrs = client.query(iql)
             nums = list(mbrs.get_points())
             names = mbrs.keys()
             mbrs = []
@@ -63,12 +70,12 @@ class PersonHandler(tornado.web.RequestHandler):
 
                 iql = "select first(nickname_m) from message where nickname='{}'".format(names[idx][1]["nickname"])
                 print(iql)
-                earliest = list(influx_client.query(iql).get_points())[0]["time"].replace("T", " ").split(".")[0]
+                earliest = list(client.query(iql).get_points())[0]["time"].replace("T", " ").split(".")[0]
                 print(earliest)
 
                 iql = "select last(nickname_m) from message where nickname='{}'".format(names[idx][1]["nickname"])
                 print(iql)
-                latest = list(influx_client.query(iql).get_points())[0]["time"].replace("T", " ").split(".")[0]
+                latest = list(client.query(iql).get_points())[0]["time"].replace("T", " ").split(".")[0]
                 print(latest)
 
                 mbrs.append([names[idx][1]["nickname"], earliest, latest, nums[idx]["count"]])
@@ -79,14 +86,14 @@ class PersonHandler(tornado.web.RequestHandler):
 
         iql = "select * from message where nickname='{}';".format(nickname)
         print(iql)
-        msgs = influx_client.query(iql)
+        msgs = client.query(iql)
         msgs = list(msgs.get_points())
         msgs = [[m["time"].split(".")[0].replace("T", " "), m["group"], m["content"]] for m in msgs]
         print(msgs)
 
         iql = "select count(group_m) from message where nickname='{}' group by \"group\";".format(nickname)
         print(iql)
-        msg_count = influx_client.query(iql)
+        msg_count = client.query(iql)
         keys = msg_count.keys()
         points = list(msg_count.get_points())
         groups = []
@@ -96,14 +103,14 @@ class PersonHandler(tornado.web.RequestHandler):
 
         iql = "select count(group_m) from message where nickname='{}' group by time(1d)".format(nickname)
         print(iql)
-        msg_agg = influx_client.query(iql)
+        msg_agg = client.query(iql)
         msg_agg = list(msg_agg.get_points())
         msg_agg = [[d["time"].split("T")[0], d["count"]] for d in msg_agg]
         print(msg_agg)
 
         iql = "select distinct(groupnick) from nick where nickname='{}'".format(nickname)
         print(iql)
-        nicks = list(influx_client.query(iql).get_points())
+        nicks = list(client.query(iql).get_points())
         nicks = [n["distinct"] for n in nicks]
         print(nicks)
 
@@ -114,7 +121,7 @@ class AllMessages(tornado.web.RequestHandler):
     """测试用，显示所有消息"""
 
     def get(self):
-        res = influx_client.query("select * from message;")
+        res = client.query("select * from message;")
         self.write(res[0])
 
 
@@ -133,7 +140,7 @@ class Application(tornado.web.Application):
                 os.path.dirname(__file__),
                 "template",
             ),
-            static_path=os.path.join(os.path.dirname(__file__), "upload"),
+            static_path=os.path.join(os.path.dirname(__file__), "static"),
         )
 
 

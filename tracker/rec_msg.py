@@ -127,6 +127,8 @@ friends 好友
 消息：
     消息总数
 """
+
+itchat.auto_login(hotReload=True)
 # 处理私聊文字消息
 @itchat.msg_register([TEXT], isFriendChat=True)
 def do_checks(msg):
